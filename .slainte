@@ -1,0 +1,9 @@
+# Slainte Audit Targets
+
+## docs
+- README.md
+- SPEC.md
+- docs/
+
+## playbook
+- docs/playbook.md

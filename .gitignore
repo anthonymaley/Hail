@@ -1,0 +1,8 @@
+kivna/input/
+kivna/output/
+.DS_Store
+*.tmp
+*.log
+*.bak
+*.swp
+*~
