@@ -28,4 +28,4 @@ Nothing yet.
 
 ## Current Status
 
-Draft spec (v0.1.0) is written. Covers the `^`/`v` directive system, multi-line blocks, examples, output shape, and document structure. No tooling, no parser, no formal grammar yet.
+Spec at v0.2.0 (draft). Covers the `^`/`v` directive system, scoping (header vs inline lifetimes), overrides and clearing, multi-line blocks, examples, output shape, document structure, and versioning. Full multi-turn example conversation in the spec. No tooling, no parser, no formal grammar yet.
