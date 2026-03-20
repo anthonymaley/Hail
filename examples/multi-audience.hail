@@ -1,4 +1,4 @@
-<<:hail: 0.4
+<<:hail: 0.9
 
 <<:context: {
 Our database migration failed in production last night.

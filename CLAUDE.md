@@ -12,5 +12,6 @@ When wrapping up a session (`/kerd:switch out` or `/kerd:dian`):
 |-----|-------------|
 | README.md | Project description, setup steps, or structure changes |
 | SPEC.md | Language design changes, new directives, syntax changes |
+| docs/usage-guide.md | Practical usage rules or channel guidance changes |
 | docs/playbook.md | New setup steps, integrations, gotchas, tech stack changes, or status changes |
 | TODO.md | Every session close-out |
