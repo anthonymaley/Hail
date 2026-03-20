@@ -1,6 +1,6 @@
 # Hail: Human-AI Language
 
-Version 0.4.0 (draft)
+Version 0.5.0 (draft)
 
 ## What it is
 
@@ -55,6 +55,28 @@ A directive is a line starting with `<<:` (human to AI) or `>>:` (AI to human). 
 `>>:ref:` cites a source.
 
 `>>:limit:` explains what the AI couldn't do and why.
+
+### Named directives
+
+In multi-party conversations (multiple humans, multiple AIs, or both), add a name after the direction prefix to identify the speaker.
+
+```
+<<:anthony:context: I'm the product lead
+<<:sarah:context: I'm the designer
+
+What should the landing page look like?
+
+---
+
+>>:claude:suggestion: start with the value prop
+>>:gemini:suggestion: lead with social proof instead
+```
+
+The name is optional. If absent, the directive belongs to whoever is speaking that turn. For single-human, single-AI conversations, names aren't needed and the syntax is unchanged.
+
+A parser disambiguates names from directives by checking against the known directive list. If the segment after `<<:` is a recognized directive name, there's no speaker name. If it's not, it's a speaker name and the directive follows.
+
+Named directives follow the same scoping rules as unnamed ones. `<<:anthony:tone: formal` in the header persists for anthony across all turns. `<<:sarah:tone: casual` is independent and persists for sarah.
 
 ### Rules
 
