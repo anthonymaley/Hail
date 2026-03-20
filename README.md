@@ -1,6 +1,4 @@
-# Hail
-
-**Human-AI Language**
+# Hail: Human-AI Interaction Layer
 
 A plain-text protocol for structured human-AI communication. Three prefixes. No tooling required.
 

@@ -1,10 +1,10 @@
-# Hail: Human-AI Language
+# Hail: Human-AI Interaction Layer
 
 Version 0.9.1 (draft)
 
 ## What it is
 
-Hail is a markup language for human-AI communication. Plain text with optional directives that make intent, context, and constraints explicit.
+Hail is a plain-text protocol for human-AI communication. Plain text with optional directives that make intent, context, and constraints explicit.
 
 A valid Hail document can be a single sentence. The structure is there when you need it.
 
