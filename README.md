@@ -1,6 +1,6 @@
 # Hail
 
-Human-AI Language. A lightweight markup for structured communication between humans and AI.
+Human-AI Language. A markup language for human-AI communication.
 
 ## What it is
 
