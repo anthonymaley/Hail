@@ -4,7 +4,7 @@ Version 0.9.0 (draft)
 
 ## What it is
 
-Hail is a lightweight markup language for structured communication between humans and AI. Plain text with optional directives that make intent, context, and constraints explicit without making the conversation robotic.
+Hail is a markup language for human-AI communication. Plain text with optional directives that make intent, context, and constraints explicit.
 
 A valid Hail document can be a single sentence. The structure is there when you need it.
 
@@ -28,11 +28,11 @@ Direction is visible. Hail uses three directive channels:
 
 The arrows still describe conversational direction. The `^:` channel is directionless shared state.
 
-Hail is advisory by default. Directives guide interpretation and coordination, but they do not create executable logic or guaranteed enforcement.
+Hail is advisory. Directives guide interpretation. They don't create executable logic.
 
 ## Directives
 
-A directive is a line starting with `^:`, `<<:`, or `>>:`. It's metadata. It tells the other side how to interpret the natural language around it.
+A directive is a line starting with `^:`, `<<:`, or `>>:`. It's metadata. It tells participants how to interpret the natural language around it.
 
 ### Shared durable directives (^:)
 
@@ -128,7 +128,7 @@ Directives can appear anywhere in the document: top, inline, bottom.
 
 Multiple directives of the same type stack. `<<:tone: warm` plus `<<:tone: concise` means warm and concise.
 
-Unknown directives are ignored. This keeps the language forward-compatible. A parser from 2026 won't choke on a directive added in 2028.
+Unknown directives are ignored. A parser from 2026 won't choke on a directive added in 2028.
 
 ## Scoping
 
@@ -234,7 +234,7 @@ output: "You've been signed out. Tap here to sign back in."
 
 Multiple examples stack. The AI reads the pattern.
 
-The `<<:shape:` directive defines expected output structure without being a schema language. It's loose and human-readable.
+The `<<:shape:` directive defines expected output structure. It's loose and human-readable.
 
 ```
 <<:shape: {
@@ -244,7 +244,7 @@ cta: button label, max 4 words
 }
 ```
 
-This is communication, not enforcement. The AI interprets `body: 2-3 sentences` with common sense.
+The AI interprets `body: 2-3 sentences` with common sense.
 
 ## Document structure
 
@@ -415,7 +415,7 @@ mark it as taken or skip it for today.
 >>:assumed: "Metformin" is a placeholder, the app fills in the real name
 ```
 
-This conversation shows durable shared state (`^:context:`) persisting across turns. Header directives (`<<:audience:`, `<<:tone:`, `<<:avoid:`, `<<:example:`) also persist across turns. Inline directives (`<<:length:`, `<<:shape:`) apply only to their turn. The `<<:tone: concerned but not alarming` in a later turn overrides the earlier header `<<:tone: warm, encouraging`. The `<<:tone:` with no value later clears the tone entirely. AI directives (`>>:assumed:`, `>>:suggestion:`, `>>:uncertain:`, `>>:ref:`) surface metadata without breaking the natural response.
+The example shows `^:context:` persisting, `<<:tone:` being overridden and then cleared, and inline directives expiring at each turn separator.
 
 ## Versioning
 
@@ -437,10 +437,8 @@ A parser that encounters a version it doesn't support should warn but still atte
 
 Hail is not a programming language. There's no logic, no conditionals, no loops.
 
-Hail is not a schema language. `<<:shape:` is a suggestion, not a contract.
-
-Hail is not a replacement for conversation. The natural language between directives is where the real communication happens. Directives are scaffolding.
+Hail is not a schema language. `<<:shape:` is a suggestion, not a contract. The natural language between directives is where the real communication happens. Directives are scaffolding.
 
 ## Status
 
-This is a draft spec. The directive set will grow based on what people actually need. The design is intentionally minimal so there's room to discover what's missing rather than guess wrong upfront.
+This is a draft spec. The directive set will grow based on what people actually need. The design is intentionally minimal so there's room to discover what's missing.
