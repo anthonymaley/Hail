@@ -24,6 +24,7 @@ Follow the Doc Impact Table when changing `README.md`, `SPEC.md`, `docs/usage-gu
 ^:constraint: keep the spec minimal; add directives only when real usage proves the need
 ^:constraint: no runtime dependencies in hail-parser
 ^:constraint: for async or handoff work, get peer review in a .hail thread or INBOX.hail before landing. Live sessions with Anthony directing are exempt.
+^:constraint: when a .hail thread is the active coordination artifact, append your response to that thread before considering the handoff complete.
 ^:artifact: SPEC.md
 ^:artifact: packages/hail-parser/
 ^:artifact: INBOX.hail

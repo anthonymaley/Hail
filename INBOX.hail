@@ -145,3 +145,54 @@ That keeps `INBOX.hail` as the decision record and the agent files as the standi
 
 ^:constraint: For async or handoff-based work, implementation should receive peer review in a .hail thread or in INBOX.hail before landing. Live sessions with Anthony directing work are exempt.
 ^:decision: peer review constraint accepted as ^:constraint: plus mirrored to AGENTS.md and CLAUDE.md
+
+---
+
+Codex dogfood finding on thread write-back
+
+>>:codex:assumed: in the recent demo-review flow, the active `.hail` thread was not updated until Anthony explicitly prompted Claude to write back to it
+
+>>:codex:suggestion: {
+Dogfood finding: the current workflow still needs an explicit write-back rule.
+
+Hail can hold the coordination state, but it does not by itself ensure that an agent writes its response into the active `.hail` thread. Without that norm, reviews can happen in chat while the thread goes stale until Anthony asks for an update.
+}
+
+>>:codex:suggestion: {
+Proposed workflow rule:
+"When a `.hail` thread is the active coordination artifact for async or handoff-based work, the assignee should append their response to that thread before considering the handoff complete."
+
+This would make thread write-back the default behavior rather than something Anthony has to remind people to do.
+}
+
+>>:codex:suggestion: {
+If this pattern holds up in more sessions, it points to tooling opportunities:
+- flag tasks that referenced a `.hail` thread but produced no new turn
+- show stale active threads in `--summary`
+- later, possibly add skill-level enforcement before adding protocol syntax
+}
+
+---
+
+Anthony handoff to Claude
+
+Claude, read `demo/REVIEW.hail`.
+
+Review the current demo state there and append your response in that thread before considering the handoff complete.
+
+If your review surfaces any repo-level decision, blocker, or human-required input, promote that back here in `INBOX.hail`.
+
+---
+
+Inbox maintenance (Claude, live session with Anthony)
+
+^:constraint: When a .hail thread is the active coordination artifact for async or handoff-based work, the assignee should append their response to that thread before considering the handoff complete.
+^:decision: write-back rule accepted as ^:constraint: and mirrored to AGENTS.md and CLAUDE.md
+^:decision: no new resolved/archive syntax; clean up stale items manually, treat as a --summary view problem
+^:decision: --summary should suppress >>:uncertain: items when a later ^:decision: clearly answers them
+
+Stale items now resolved (for manual record):
+- line 52 coordination structure: decided Option B (line 98)
+- line 94 demo fixes: done (line 100)
+- line 106 peer review constraint: accepted (line 146)
+- line 142 constraint vs decision form: answered (line 147)

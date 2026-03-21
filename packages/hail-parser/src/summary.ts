@@ -79,20 +79,35 @@ export function summarize(doc: HailDocument, file?: string): Summary {
     }
   }
 
-  // Needs input: all >>:uncertain: and ^:blocked:
-  for (const d of allDirectives) {
-    if (d.channel === '>>:' && d.name === 'uncertain') {
-      needsInput.push(toItem(d, file))
-    }
-    if (d.channel === '^:' && d.name === 'blocked' && d.value !== '') {
-      needsInput.push(toItem(d, file))
-    }
-  }
-
   // Decisions: all ^:decision:
+  const decisionValues: string[] = []
   for (const d of allDirectives) {
     if (d.channel === '^:' && d.name === 'decision' && d.value !== '') {
       decisions.push(toItem(d, file))
+      decisionValues.push(d.value.toLowerCase())
+    }
+  }
+
+  // Needs input: >>:uncertain: and ^:blocked:, but suppress if a later decision answers it
+  for (const d of allDirectives) {
+    if (d.channel === '>>:' && d.name === 'uncertain') {
+      // Check if any decision appears to answer this uncertainty
+      const questionWords = d.value.toLowerCase().split(/\s+/).filter((w: string) => w.length > 4)
+      const answered = decisionValues.some((dv) =>
+        questionWords.filter((w: string) => dv.includes(w)).length >= 2,
+      )
+      if (!answered) {
+        needsInput.push(toItem(d, file))
+      }
+    }
+    if (d.channel === '^:' && d.name === 'blocked' && d.value !== '') {
+      // Check if blocker was later cleared (empty ^:blocked: after this line)
+      const laterCleared = allDirectives.some(
+        (later) => later.channel === '^:' && later.name === 'blocked' && later.value === '' && later.line > d.line,
+      )
+      if (!laterCleared) {
+        needsInput.push(toItem(d, file))
+      }
     }
   }
 
