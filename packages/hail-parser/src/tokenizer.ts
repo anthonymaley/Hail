@@ -10,6 +10,8 @@ const CHANNEL_PREFIXES: Channel[] = ['^:', '<<:', '>>:']
 
 const VERSION_RE = /^<<:hail:\s*(.+)$/
 
+const FENCE_RE = /^(`{3,}|~{3,})/
+
 function parseDirectiveLine(
   raw: string,
   lineNum: number,
@@ -78,16 +80,23 @@ function parseDirectiveLine(
   }
 }
 
+function startsWithChannelPrefix(line: string): boolean {
+  return CHANNEL_PREFIXES.some((p) => line.startsWith(p))
+}
+
 export function tokenize(source: string): Token[] {
   const lines = source.split('\n')
   const tokens: Token[] = []
   let inBlock = false
+  let inFence = false
+  let fenceMarker = ''
   let prevBlank = true // treat start of document as preceded by blank
 
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i]
     const lineNum = i + 1
 
+    // Handle braced blocks (highest priority)
     if (inBlock) {
       if (raw.trimEnd() === '}') {
         tokens.push({ type: 'block_end', line: lineNum, raw })
@@ -95,6 +104,27 @@ export function tokenize(source: string): Token[] {
       } else {
         tokens.push({ type: 'block_content', line: lineNum, raw })
       }
+      continue
+    }
+
+    // Handle fenced code blocks
+    const fenceMatch = raw.match(FENCE_RE)
+    if (inFence) {
+      // Check for closing fence: same character, at least as many
+      if (fenceMatch && fenceMatch[1][0] === fenceMarker[0] && fenceMatch[1].length >= fenceMarker.length) {
+        inFence = false
+        fenceMarker = ''
+      }
+      tokens.push({ type: 'text', line: lineNum, raw })
+      prevBlank = false
+      continue
+    }
+
+    if (fenceMatch) {
+      inFence = true
+      fenceMarker = fenceMatch[1]
+      tokens.push({ type: 'text', line: lineNum, raw })
+      prevBlank = false
       continue
     }
 
@@ -134,4 +164,87 @@ export function tokenize(source: string): Token[] {
   }
 
   return tokens
+}
+
+export interface ValidationIssue {
+  line: number
+  message: string
+  severity: 'error' | 'warning'
+}
+
+export function validate(source: string): ValidationIssue[] {
+  const issues: ValidationIssue[] = []
+  const lines = source.split('\n')
+  let inBlock = false
+  let inFence = false
+  let fenceMarker = ''
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i]
+    const lineNum = i + 1
+
+    if (inBlock) {
+      if (raw.trimEnd() === '}') inBlock = false
+      continue
+    }
+
+    const fenceMatch = raw.match(FENCE_RE)
+    if (inFence) {
+      if (fenceMatch && fenceMatch[1][0] === fenceMarker[0] && fenceMatch[1].length >= fenceMarker.length) {
+        inFence = false
+        fenceMarker = ''
+      }
+      continue
+    }
+    if (fenceMatch) {
+      inFence = true
+      fenceMarker = fenceMatch[1]
+      continue
+    }
+
+    // Check for malformed directives: starts with channel prefix but doesn't parse
+    if (startsWithChannelPrefix(raw)) {
+      const parsed = parseDirectiveLine(raw, lineNum)
+      if (!parsed) {
+        issues.push({
+          line: lineNum,
+          message: `Malformed directive: ${raw}`,
+          severity: 'error',
+        })
+      } else if (parsed.type === 'block_start') {
+        inBlock = true
+      }
+    }
+
+    // Check separator spacing
+    if (raw.trim() === '---') {
+      const prevBlank = i === 0 || lines[i - 1].trim() === ''
+      const nextBlank = i + 1 >= lines.length || lines[i + 1].trim() === ''
+      if (!prevBlank || !nextBlank) {
+        issues.push({
+          line: lineNum,
+          message: 'Turn separator missing blank lines before/after',
+          severity: 'warning',
+        })
+      }
+    }
+  }
+
+  if (inBlock) {
+    issues.push({
+      line: lines.length,
+      message: 'Unclosed block: missing closing }',
+      severity: 'error',
+    })
+  }
+
+  if (inFence) {
+    issues.push({
+      line: lines.length,
+      message: 'Unclosed fenced code block',
+      severity: 'warning',
+    })
+  }
+
+  return issues
 }

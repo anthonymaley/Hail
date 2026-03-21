@@ -44,9 +44,34 @@ For multi-turn conversations, use `.hail` or add `<<:hail:` on the first line to
 - **[README Template](docs/readme-template.md)** — snippet to paste into your own repo
 - **[Examples](examples/)** — code review, creative writing, multi-audience, quick tasks
 
+## Parser
+
+`hail-parser` is a TypeScript parser with zero runtime dependencies. Two layers: a tokenizer (string to token stream) and a parser (tokens to turn tree with resolved directive state).
+
+```bash
+npm install hail-parser
+```
+
+```typescript
+import { parse, tokenize, validate } from 'hail-parser'
+
+const doc = parse(source)
+const tokens = tokenize(source)
+const issues = validate(source)
+```
+
+CLI:
+
+```bash
+npx hail-parser document.md              # full parse tree
+npx hail-parser document.hail --state    # active directive state
+npx hail-parser document.hail --tokens   # raw token stream
+npx hail-parser document.hail --validate # check for issues
+```
+
 ## Status
 
-Draft spec (v0.9.1). Designed by a human, reviewed by Claude, Gemini, ChatGPT, and Codex. Ready for real-world use. No tooling yet.
+Draft spec (v0.9.1). Designed by a human, reviewed by Claude, Gemini, ChatGPT, and Codex. Parser built (42 tests). Not yet published to npm.
 
 ## License
 

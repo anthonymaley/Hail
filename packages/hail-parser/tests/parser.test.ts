@@ -231,6 +231,20 @@ Turn two`
     expect(state.durable.size).toBe(0)
   })
 
+  it('does not split turns on --- inside fenced code', () => {
+    const source = `<<:hail: 0.9
+
+Here is some code:
+
+\`\`\`
+---
+\`\`\`
+
+Still turn one`
+    const doc = parse(source)
+    expect(doc.turns).toHaveLength(1)
+  })
+
   it('per-turn header in later turns is session-level', () => {
     const source = `<<:hail: 0.9
 

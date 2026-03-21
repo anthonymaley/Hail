@@ -4,7 +4,7 @@ How to rebuild this project from scratch.
 
 ## Tech Stack
 
-Pure spec project. No code dependencies. The spec lives in `SPEC.md` at the repo root.
+TypeScript (parser). The spec lives in `SPEC.md`. The parser lives in `packages/hail-parser/`.
 
 ## Setup
 
@@ -33,6 +33,10 @@ examples/
   creative-writing.md        — blog post writing
   multi-audience.md          — same incident, three audiences
   quick-task.md              — minimal one-shot task
+packages/
+  hail-parser/               — TypeScript parser and CLI
+    src/                     — tokenizer, parser, types, CLI
+    tests/                   — 42 tests
 ```
 
 ## Gotchas
@@ -41,4 +45,4 @@ The `^:` prefix was used for human directives in v0.1 through v0.3, removed in v
 
 ## Current Status
 
-Spec at v0.9.1 (draft). Three-channel model, native/embedded parsing modes, per-turn header scoping, stackable directive list, structural colon disambiguation, named directives. Reviewed by Claude, Gemini, ChatGPT, and Codex. No tooling yet.
+Spec at v0.9.1 (draft). Three-channel model, native/embedded parsing modes, per-turn header scoping, stackable directive list, structural colon disambiguation, named directives. Parser built (TypeScript, 42 tests, zero runtime deps). Reviewed by Claude, Gemini, ChatGPT, and Codex. Not yet published to npm.

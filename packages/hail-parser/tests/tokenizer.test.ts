@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { tokenize } from '../src/tokenizer.js'
+import { tokenize, validate } from '../src/tokenizer.js'
 
 describe('tokenizer', () => {
   it('parses plain text as a single text token', () => {
@@ -102,5 +102,89 @@ claude: review
     const tokens = tokenize(source)
     expect(tokens[0].type).toBe('block_start')
     expect((tokens[0] as any).value).toBe('')
+  })
+
+  it('does not parse directives inside fenced code blocks', () => {
+    const source = `some text
+
+\`\`\`
+<<:tone: warm
+---
+\`\`\`
+
+more text`
+    const tokens = tokenize(source)
+    const directives = tokens.filter((t) => t.type === 'directive')
+    const separators = tokens.filter((t) => t.type === 'separator')
+    expect(directives).toHaveLength(0)
+    expect(separators).toHaveLength(0)
+  })
+
+  it('does not parse directives inside tilde fences', () => {
+    const source = `~~~
+<<:context: inside fence
+~~~`
+    const tokens = tokenize(source)
+    const directives = tokens.filter((t) => t.type === 'directive')
+    expect(directives).toHaveLength(0)
+  })
+
+  it('handles nested fence markers correctly', () => {
+    const source = `\`\`\`\`
+\`\`\`
+<<:tone: still inside
+\`\`\`
+\`\`\`\``
+    const tokens = tokenize(source)
+    const directives = tokens.filter((t) => t.type === 'directive')
+    expect(directives).toHaveLength(0)
+  })
+
+  it('resumes parsing after fence closes', () => {
+    const source = `\`\`\`
+inside fence
+\`\`\`
+<<:tone: outside fence`
+    const tokens = tokenize(source)
+    const directives = tokens.filter((t) => t.type === 'directive')
+    expect(directives).toHaveLength(1)
+    expect((directives[0] as any).name).toBe('tone')
+  })
+})
+
+describe('validate', () => {
+  it('returns no issues for valid document', () => {
+    const issues = validate(`<<:tone: warm\n\nHello world`)
+    expect(issues).toHaveLength(0)
+  })
+
+  it('detects malformed directives', () => {
+    const issues = validate('<<:')
+    expect(issues.length).toBeGreaterThan(0)
+    expect(issues[0].severity).toBe('error')
+    expect(issues[0].message).toContain('Malformed directive')
+  })
+
+  it('detects malformed directive with no name', () => {
+    const issues = validate('<<: just some text')
+    expect(issues.length).toBeGreaterThan(0)
+    expect(issues[0].severity).toBe('error')
+  })
+
+  it('detects separator spacing issues', () => {
+    const issues = validate('text\n---\nmore text')
+    expect(issues.length).toBeGreaterThan(0)
+    expect(issues[0].severity).toBe('warning')
+  })
+
+  it('detects unclosed blocks', () => {
+    const issues = validate('^:context: {\nsome content')
+    expect(issues.length).toBeGreaterThan(0)
+    expect(issues[0].message).toContain('Unclosed block')
+  })
+
+  it('does not flag directives inside fenced code', () => {
+    const issues = validate('```\n<<:broken:stuff:here\n```')
+    expect(issues).toHaveLength(0)
   })
 })

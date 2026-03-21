@@ -2,7 +2,7 @@
 
 import { readFileSync } from 'node:fs'
 import { basename } from 'node:path'
-import { tokenize } from './tokenizer.js'
+import { tokenize, validate } from './tokenizer.js'
 import { parse, stateAt } from './parser.js'
 import type { DirectiveState } from './types.js'
 
@@ -74,25 +74,18 @@ function main(): void {
   const doc = parse(source, { filename, mode: 'auto' })
 
   if (flags.has('--validate')) {
-    const issues: string[] = []
-
-    const tokens = tokenize(source)
-    for (const token of tokens) {
-      if (token.type === 'separator' && 'valid' in token && !token.valid) {
-        issues.push(
-          `Line ${token.line}: turn separator missing blank lines before/after`,
-        )
-      }
-    }
+    const issues = validate(source)
 
     if (issues.length === 0) {
       console.error('Valid.')
       process.exit(0)
     } else {
       for (const issue of issues) {
-        console.error(issue)
+        const prefix = issue.severity === 'error' ? 'ERROR' : 'WARN'
+        console.error(`${prefix} line ${issue.line}: ${issue.message}`)
       }
-      process.exit(1)
+      const hasErrors = issues.some((i) => i.severity === 'error')
+      process.exit(hasErrors ? 1 : 0)
     }
   }
 

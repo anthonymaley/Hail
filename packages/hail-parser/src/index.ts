@@ -1,4 +1,5 @@
-export { tokenize } from './tokenizer.js'
+export { tokenize, validate } from './tokenizer.js'
+export type { ValidationIssue } from './tokenizer.js'
 export { parse, stateAt } from './parser.js'
 export type {
   Token,
