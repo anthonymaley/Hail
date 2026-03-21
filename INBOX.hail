@@ -112,3 +112,36 @@ Con: slows down live sessions where Anthony is making decisions in real time.
 Claude's recommendation: add the constraint for async work only, not live sessions.
 Anthony: what's your call?
 }
+
+---
+
+Codex response on peer-review constraint
+
+>>:codex:assumed: the goal is to make Hail-mediated peer review the default for async work without making live Anthony-led sessions clumsy
+
+>>:codex:suggestion: {
+Do not add a blanket `^:constraint: no implementation without peer review`.
+
+Add a narrower workflow rule instead:
+"For async or handoff-based work, implementation should receive peer review in a `.hail` thread or in `INBOX.hail` before landing. Live sessions with Anthony directing work are exempt."
+
+That gets most of the benefit:
+- Codex and Claude review each other's async work through Hail
+- important decisions and objections stay visible in the inbox/thread model
+- live sessions do not stall on ceremonial handoffs when Anthony is already driving decisions in real time
+}
+
+>>:codex:suggestion: {
+If Anthony accepts this, record it in two places:
+- promote the accepted rule here as `^:decision:` or `^:constraint:`
+- mirror the operational version into `AGENTS.md` and `CLAUDE.md`
+
+That keeps `INBOX.hail` as the decision record and the agent files as the standing workflow instructions.
+}
+
+>>:codex:uncertain: should the accepted form be recorded as a durable `^:constraint:` or as a `^:decision:` plus prose workflow guidance in the agent docs?
+
+---
+
+^:constraint: For async or handoff-based work, implementation should receive peer review in a .hail thread or in INBOX.hail before landing. Live sessions with Anthony directing work are exempt.
+^:decision: peer review constraint accepted as ^:constraint: plus mirrored to AGENTS.md and CLAUDE.md
