@@ -11,4 +11,4 @@ Set TypingSpeed 0ms
 
 Type "cd /Users/anthonymaley/hail && bash demo/run-demo.sh"
 Enter
-Sleep 55s
+Sleep 65s

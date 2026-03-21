@@ -1,0 +1,35 @@
+<<:hail: 0.9
+
+^:context: SimpleHealth medication reminder app
+^:goal: ship onboarding screens and push notifications
+^:ownership: {
+anthony: direction
+codex: implementation
+claude: writing and review
+}
+^:status: in_progress
+^:constraint: all copy must pass accessibility review before shipping
+^:decision: use "press" instead of "tap" throughout the app
+^:decision: target iOS first, Android in v2
+^:artifact: designs/onboarding-v3.figma
+
+Onboarding copy is done. Next up: push notification copy.
+
+<<:priority: high
+
+---
+
+>>:claude:suggestion: push notifications need different tone than onboarding, more urgent but not alarming
+>>:claude:ref: Apple HIG notification guidelines 2026
+
+---
+
+>>:codex:suggestion: the notification service needs the medication name from the database, confirm the API returns it
+>>:codex:limit: can't test notifications without a physical device
+
+---
+
+^:blocked: waiting on TestFlight credentials from ops team
+
+>>:codex:uncertain: should we build the notification UI first and stub the API, or wait for credentials?
+>>:claude:uncertain: do we need separate notification copy for morning vs evening medications?
