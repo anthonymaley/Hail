@@ -1,0 +1,92 @@
+<<:hail: 0.9
+
+^:context: {
+Repo-level coordination file for dogfooding Hail inside the Hail repo.
+Use this file to surface durable state, human-required decisions, important AI insights, and blockers across Anthony, Codex, and Claude.
+Keep it focused on active coordination, not full transcripts.
+}
+
+^:goal: Dogfood Hail as the shared coordination layer for spec work, parser/tooling work, and cross-agent review so important human decisions are explicit and easy to react to.
+
+^:ownership: {
+anthony: direction and final decisions
+codex: implementation and hardening
+claude: review and writing
+}
+
+^:status: in_progress
+
+^:constraint: {
+Promote accepted outcomes to `^:decision:` instead of leaving them buried in prose.
+Use `>>:` to surface human-required input, uncertainty, and important insights without bloating the main artifact.
+Keep this file as a coordination layer, not a complete log of every exchange.
+}
+
+^:artifact: SPEC.md
+^:artifact: docs/usage-guide.md
+^:artifact: packages/hail-parser/
+^:artifact: demo/REVIEW.hail
+
+Use this file to capture:
+- decisions Anthony needs to make
+- insights Codex or Claude think Anthony should react to
+- blockers that change what work can proceed
+- durable decisions once they are accepted
+
+---
+
+>>:codex:assumed: the best first dogfood use is repo-level coordination rather than trying to encode every review comment as directives
+
+>>:codex:suggestion: {
+The current protocol is already close to usable for human-in-the-loop coordination:
+- `>>:uncertain:` can surface "Anthony needs to answer this"
+- `>>:suggestion:` can surface "Anthony should consider this"
+- `^:decision:` can record accepted outcomes
+- `^:blocked:` can make waiting states explicit
+
+The main gap is likely tooling and workflow, not syntax.
+}
+
+>>:codex:uncertain: {
+Which repo-level artifact should become the primary place for active human decisions?
+Option A: keep `dogfood.hail` as the central inbox for open decisions.
+Option B: keep repo-level state here but use topic-specific `.hail` files such as `demo/REVIEW.hail` for actual decision threads.
+}
+
+>>:codex:suggestion: {
+The parser/CLI should probably grow dogfood-oriented views next.
+Examples:
+- `--needs-human` for active `>>:uncertain:` items and blockers
+- `--decisions` for accepted durable decisions
+- `--summary` for a compact current-state view
+}
+
+>>:codex:suggestion: {
+Prompt Claude to review `demo/REVIEW.hail` in-file as the next dogfood step.
+That would test whether Hail works as a shared review artifact rather than just a static example.
+}
+
+>>:claude:suggestion: {
+If this file works, the strongest proof point for Hail is not "structured prompting."
+It is "important human decisions and AI insights stay visible until they are resolved."
+}
+
+---
+
+Claude response to open questions and suggestions
+
+>>:claude:assumed: Codex's findings and suggestions above have not yet been reviewed by Anthony
+
+On the coordination file question (Option A vs B):
+
+>>:claude:suggestion: Option B. This file is the inbox. Topic-specific `.hail` files (like `demo/REVIEW.hail`) are the threads. Decisions made in threads get promoted here as `^:decision:` lines. This keeps dogfood.hail short and scannable while letting threads get as detailed as they need to be.
+
+On the CLI views (`--needs-human`, `--decisions`, `--summary`):
+
+>>:claude:suggestion: `--summary` is the highest-value addition. It would show the active `^:` state plus any open `>>:uncertain:` items in a compact format. `--needs-human` is a nice name but it's really just filtering for `>>:uncertain:` and `^:blocked:`. Could be a flag on `--summary` rather than its own command.
+
+On what's working:
+
+This file is working. Two agents have written to it across sessions. The `^:` header is stable context. The `>>:` items are accumulating as a decision queue for Anthony. The `---` separators mark when new input arrived. That's the protocol doing its job.
+
+>>:claude:uncertain: should the demo fixes (double separator, VHS sleep) be done in this session or deferred? They're quick but they're implementation, not coordination.

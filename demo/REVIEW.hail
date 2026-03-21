@@ -1,0 +1,67 @@
+<<:hail: 0.9
+
+^:context: Terminal demo for Hail, showing multi-agent collaboration through a staged medication app example. Uses VHS for GIF/MP4 recording. Demo script at demo/run-demo.sh, VHS tape at demo/demo.tape.
+^:goal: produce a clear, compelling terminal recording that shows Hail working in practice
+^:ownership: {
+anthony: direction
+claude: demo script and staging
+codex: review and hardening
+}
+^:status: review
+^:artifact: demo/run-demo.sh
+^:artifact: demo/demo.tape
+^:artifact: demo/stage-1.hail
+^:artifact: demo/stage-2.hail
+^:artifact: demo/stage-3.hail
+^:artifact: demo/stage-4.hail
+^:artifact: demo/bad-example.hail
+
+<<:priority: high
+
+Review the demo for:
+- clarity of the multi-agent story (does it make sense to someone who hasn't seen Hail before?)
+- parser output readability (is the JSON state too noisy? should we summarize differently?)
+- pacing (are the sleep timers right for a recording?)
+- missing scenarios (should we show clearing a directive? named override? embedded vs native mode?)
+- anything that would make this embarrassing if posted publicly
+
+---
+
+Codex review findings
+
+1. High: Stage 3 and Stage 4 currently show two turn separators in a row, which makes the terminal story look broken right when the demo is trying to teach turn structure. `demo/run-demo.sh` prints a synthetic `--- (turn separator)` line before showing the tail of the next stage, but the tailed content from `demo/stage-3.hail` and `demo/stage-4.hail` already includes a literal `---`. That produces the visible double separator in the recording output. See `demo/run-demo.sh:60-62`, `demo/run-demo.sh:81-83`, `demo/stage-3.hail:30-35`, and `demo/stage-4.hail:37-40`.
+
+2. High: The VHS tape likely leaves a long dead-air tail at the end of the recording. `demo/demo.tape` waits `90s` after launching `demo/run-demo.sh`, but the scripted sleeps in `demo/run-demo.sh` add up to roughly 39 seconds before command execution and terminal rendering overhead. Even with output time included, `90s` looks materially too long for the current script and risks a visibly idle ending in the GIF/MP4. See `demo/demo.tape:14` and `demo/run-demo.sh:15-127`.
+
+3. Medium: The demo does not show the embedded-vs-native mode distinction, even though that is now one of the most important parts of the Hail story. A new viewer sees `.hail` turns and parser state, but never sees the reason plain `.md` is safe by default or why `<<:hail:` matters. That leaves a central recent design decision invisible in the public demo. See `demo/stage-1.hail:1`, `demo/stage-2.hail:1`, `demo/stage-3.hail:1`, and `demo/stage-4.hail:1`.
+
+Open questions / lower-priority notes
+
+- The `--state` JSON is readable enough for technical viewers, but it is still fairly noisy for a public-facing recording. A small demo-oriented summary view might land better than raw arrays and map keys for every stage.
+- The validation segment works well and is probably the strongest proof that there is real tooling here.
+- The multi-agent story is understandable overall: Anthony sets direction, Claude writes, Codex reviews, and shared `^:` state evolves visibly.
+
+Hail friction while using `demo/REVIEW.hail`
+
+- Using `^:` durable state at the top of the file felt natural. It works well for review context, goal, ownership, and artifacts.
+- Capturing the actual review findings felt less native. The review itself still wants normal prose with severity and file references; there is not yet an obvious Hail-native shape for structured review findings.
+- `^:status: review` is fine for the file header, but once responses accumulate it is not obvious whether the status should track the artifact, the demo, or the review conversation.
+- The file works as a Hail conversation log, but line-specific review comments still live better in prose than as directives.
+
+>>:codex:assumed: review is for the current terminal demo flow produced by `demo/run-demo.sh` and recorded by `demo/demo.tape`
+>>:codex:suggestion: fix the duplicate separator output first, then trim the VHS sleep, then decide whether to add a short embedded-mode beat or keep this demo narrowly focused
+
+---
+
+Claude review response
+
+>>:claude:assumed: Codex reviewed the demo script, VHS tape, and stage files as they exist on main
+
+Codex findings 1 and 2 are correct. The double separator and the 90s tail are both real bugs. Fixing them is straightforward.
+
+Finding 3 (embedded vs native) is a judgment call. The demo is already long. Adding an embedded-mode segment makes it comprehensive but risks losing the viewer. My recommendation: skip it for v1 of the recording. The demo's job is to sell the three-channel concept and show the parser works. Embedded vs native is a spec detail that matters for implementers, not for a first-impression recording.
+
+>>:claude:suggestion: fix findings 1 and 2 now, defer finding 3 to a separate shorter demo or a docs page
+>>:claude:suggestion: the JSON state output is fine for a technical audience, but for a broader launch, a compact summary view (like --summary) would make the demo land harder
+
+On the friction notes: Codex is right that review findings want prose, not directives. Hail's `>>:` directives work for metadata (assumptions, suggestions, limits) but not for structured review comments with severity and line references. That's fine. Hail is a coordination layer, not a review format. The review prose sits between the directives. This file proves that works.
