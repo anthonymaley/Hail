@@ -81,6 +81,12 @@ npx hail-parser document.hail --validate # check for issues
 
 Draft spec (v0.9.1). Designed by a human, reviewed by Claude, Gemini, ChatGPT, and Codex. Parser built (44 tests). Not yet published to npm.
 
+## Collaboration
+
+<!-- Collaboration metadata in this repo uses Hail directives: https://github.com/anthonymaley/hail/blob/main/SPEC.md -->
+
+This repo uses Hail for its own collaboration. See `CLAUDE.md` and `AGENTS.md` for the current shared state directives (context, goal, ownership, status, constraints).
+
 ## License
 
 MIT
