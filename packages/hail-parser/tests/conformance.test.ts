@@ -551,18 +551,19 @@ Some text`
     expect(unknown!.value).toBe('some future value')
   })
 
-  it('directive names are case-sensitive — uppercase not treated as directive', () => {
-    const tokens = tokenize('<<:TONE: formal')
-    // The tokenizer should parse TONE as a directive (names are allowed to be uppercase syntactically)
-    // but the spec says use lowercase — verify at minimum that case is preserved
-    const dt = tokens.find((t) => t.type === 'directive') as any
-    if (dt) {
-      expect(dt.name).toBe('TONE')
-    } else {
-      // If it doesn't parse as a directive, that's also acceptable (strict lowercase enforcement)
-      const textTokens = tokens.filter((t) => t.type === 'text')
-      expect(textTokens.length).toBeGreaterThan(0)
-    }
+  it('directive names are case-sensitive — TONE and tone are distinct keys (SPEC line 281)', () => {
+    const source = `<<:hail: 0.9
+
+<<:tone: warm
+<<:TONE: formal
+
+Hello`
+    const doc = parse(source)
+    // Both should exist as separate keys in state (case-sensitive)
+    expect(doc.turns[0].state.session.has('tone')).toBe(true)
+    expect(doc.turns[0].state.session.has('TONE')).toBe(true)
+    expect(doc.turns[0].state.session.get('tone')![0].value).toBe('warm')
+    expect(doc.turns[0].state.session.get('TONE')![0].value).toBe('formal')
   })
 
   it('validate() warns on separator missing surrounding blank lines', () => {
