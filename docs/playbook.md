@@ -30,6 +30,7 @@ docs/
   readme-template.md         — snippet for repos that use Hail
   playbook.md                — this file
   proposals/                 — design proposals and reviews
+  superpowers/plans/         — implementation plans
 examples/
   code-review.md             — code review conversation
   creative-writing.md        — blog post writing

@@ -41,6 +41,29 @@ For single-turn use (repo docs, notes), `.md` works fine. Directives embed in ma
 
 For multi-turn conversations with `---` turn separators, use `.hail` or put `<<:hail:` on the first line. This enables native parsing where `---` means a turn boundary, not a markdown thematic break.
 
+## Named Directives (Multi-Agent)
+
+When multiple humans or AIs participate, add a name after the direction prefix to identify the speaker:
+
+```text
+<<:anthony:priority: high
+>>:claude:suggestion: start with the value prop
+>>:codex:suggestion: fix the CTA first
+```
+
+Names are optional. If absent, the directive belongs to whoever is speaking that turn. For single-human, single-AI conversations, skip the name — the syntax is unchanged.
+
+Named directives follow the same scoping rules as unnamed ones. `<<:anthony:tone: formal` persists for anthony. `<<:sarah:tone: casual` is independent.
+
+When to use names:
+- coordination files where multiple agents write (like `INBOX.hail`)
+- review threads where you want to track who suggested what
+- any conversation with more than one AI or more than one human
+
+When to skip names:
+- single-human, single-AI conversations
+- repo docs where only one author writes directives
+
 ## Practical Rules
 
 - default to plain language first; add directives only when they help
