@@ -29,6 +29,20 @@ Here's your onboarding copy:
 
 `>>:` is **AI to human**. Assumptions, uncertainty, suggestions, references, limits. Attached to the response that produced them. Don't persist.
 
+## Multi-agent
+
+In multi-party conversations, add a name after the direction prefix:
+
+```
+<<:anthony:priority: high
+<<:sarah:context: I'm the designer
+
+>>:claude:suggestion: start with the value prop
+>>:codex:suggestion: fix the CTA first
+```
+
+Names are optional. Single-human, single-AI conversations don't need them. A parser disambiguates structurally: one segment before the final colon is unnamed (`<<:tone:`), two segments is named (`<<:anthony:tone:`).
+
 ## Why
 
 Prompt engineering is people reverse-engineering what structure AI models respond to. Hail makes that structure explicit. You write `<<:tone: direct` instead of burying "please be direct and concise" in a paragraph. You write `^:goal: ship v1` once instead of restating it every turn.
@@ -49,10 +63,6 @@ For multi-turn conversations, use `.hail` or add `<<:hail:` on the first line to
 
 `hail-parser` is a TypeScript parser with zero runtime dependencies. Two layers: a tokenizer (string to token stream) and a parser (tokens to turn tree with resolved directive state).
 
-```bash
-npm install hail-parser
-```
-
 ```typescript
 import { parse, tokenize, validate } from 'hail-parser'
 
@@ -66,26 +76,22 @@ CLI:
 ```bash
 npx hail-parser document.md              # full parse tree
 npx hail-parser document.hail --state    # active directive state
+npx hail-parser document.hail --summary  # compact current-state view
 npx hail-parser document.hail --tokens   # raw token stream
 npx hail-parser document.hail --validate # check for issues
+npx hail-parser document.hail --validate --strict # treat warnings as errors
 ```
+
+The package is not yet published to npm. For now, use it locally from `packages/hail-parser/`.
 
 ## Next Up
 
 - publish `hail-parser` to npm
-- add conformance fixtures derived from canonical `SPEC.md` examples
-- tighten validator/spec alignment and improve CLI diagnostics
 - dogfood Hail in real repos before expanding the directive set
 
 ## Status
 
-Draft spec (v0.9.1). Designed by a human, reviewed by Claude, Gemini, ChatGPT, and Codex. Parser built (44 tests). Not yet published to npm.
-
-## Collaboration
-
-<!-- Collaboration metadata in this repo uses Hail directives: https://github.com/anthonymaley/hail/blob/main/SPEC.md -->
-
-This repo uses Hail for its own collaboration. See `CLAUDE.md` and `AGENTS.md` for the current shared state directives (context, goal, ownership, status, constraints).
+Draft spec (v0.9.1). Designed by a human, reviewed by Claude, Gemini, ChatGPT, and Codex. Parser built (113 tests). Not yet published to npm.
 
 ## License
 

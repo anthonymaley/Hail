@@ -41,12 +41,17 @@ Returns the raw token stream. Useful for debugging parser behavior.
 
 ### `validate(source)`
 
-Returns a list of validation issues:
+Returns a list of validation issues, each with `line`, `column`, `code`, `message`, and `severity`:
 
-- malformed directive lines
-- separator spacing warnings
-- unclosed braced blocks
-- unclosed fenced code blocks
+| Code | Severity | Rule |
+|------|----------|------|
+| E001 | error | Malformed directive |
+| E002 | error | Too many segments in named directive |
+| E003 | error | Unclosed braced block |
+| W001 | warning | Separator missing surrounding blank lines |
+| W002 | warning | Uppercase directive or speaker name |
+| W003 | warning | `<<:hail:` version line not on first line |
+| W004 | warning | Unclosed fenced code block |
 
 ### `stateAt(doc, turnIndex)`
 
@@ -59,8 +64,12 @@ npx hail-parser document.md
 npx hail-parser document.hail --tokens
 npx hail-parser document.hail --state
 npx hail-parser document.hail --turn 1 --state
+npx hail-parser document.hail --summary
 npx hail-parser document.hail --validate
+npx hail-parser document.hail --validate --strict
 ```
+
+`--strict` treats warnings as errors (exit 1 if any warnings present).
 
 ## Parsing Modes
 
